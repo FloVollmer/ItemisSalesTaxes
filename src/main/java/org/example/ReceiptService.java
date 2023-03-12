@@ -5,6 +5,9 @@ public class ReceiptService {
 
     // List of known exempted products
     private static final String[] EXEMPTED_PRODUCTS = new String[]{"book", "chocolate", "pills"};
+    private static final float NORMAL_RATE = 0.1f;
+    private static final float IMPORTED_RATE = 0.05f;
+    private static final float EXEMPTED_RATE = 0f;
 
     public ReceiptItem createFromString (String str) {
         ReceiptItem item = new ReceiptItem();
@@ -21,9 +24,11 @@ public class ReceiptService {
 
         item.setImported(name.contains("imported"));
 
-        for (String prod : EXEMPTED_PRODUCTS) {
-            if (name.contains(prod)) {
-                item.setExempted(true);
+        if (item.isImported()) {
+            for (String prod : EXEMPTED_PRODUCTS) {
+                if (name.contains(prod)) {
+                    item.setExempted(true);
+                }
             }
         }
 
@@ -32,10 +37,12 @@ public class ReceiptService {
         return item;
     }
 
+    public void computeTaxes(ReceiptItem item) {
 
+        float rate = item.isImported() ? IMPORTED_RATE :
+                (item.isExempted() ? EXEMPTED_RATE : NORMAL_RATE);
 
-    public void computeTaxes () {
-
+        item.setTaxes(item.getPriceExclTax() * rate);
     }
 
 }
