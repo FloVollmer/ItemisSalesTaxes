@@ -1,6 +1,10 @@
 package org.example;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 public class ReceiptService {
 
     // List of known exempted products
@@ -9,7 +13,17 @@ public class ReceiptService {
     private static final float IMPORTED_RATE = 0.05f;
     private static final float EXEMPTED_RATE = 0f;
 
-    public ReceiptItem createFromString (String str) {
+    public Receipt createFromItems (List<ReceiptItem> items) {
+
+        Receipt receipt = new Receipt();
+        receipt.setItems(items);
+        receipt.setTotal(items.stream().map(item -> item.getShelfPrice() * item.getQuantity()).reduce(0f, Float::sum));
+        receipt.setTaxes(items.stream().map(item -> item.getTaxes() * item.getQuantity()).reduce(0f, Float::sum));
+
+        return receipt;
+    }
+
+    public ReceiptItem createItemFromString(String str) {
         ReceiptItem item = new ReceiptItem();
         String[] strs = str.split(" ");
         int nbWords = strs.length;
@@ -43,6 +57,7 @@ public class ReceiptService {
                 (item.isExempted() ? EXEMPTED_RATE : NORMAL_RATE);
 
         item.setTaxes(item.getPriceExclTax() * rate);
+        item.setShelfPrice(item.getPriceExclTax() + item.getTaxes());
     }
 
 }

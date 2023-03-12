@@ -10,7 +10,13 @@ public class ReceiptItem {
     int quantity;
     float priceExclTax;
     float taxes;
+    float shelfPrice;
     boolean exempted;
     boolean imported;
+
+    @Override
+    public String toString() {
+        return quantity + " " + name + ": " + String.format("%.2f", shelfPrice);
+    }
 
 }
