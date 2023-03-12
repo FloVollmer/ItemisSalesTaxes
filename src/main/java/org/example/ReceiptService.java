@@ -54,8 +54,11 @@ public class ReceiptService {
 
         float rate = (item.isImported() ? IMPORTED_RATE : 0f) + (item.isExempted() ? 0f : NORMAL_RATE);
 
-        item.setTaxes(item.getPriceExclTax() * rate);
-        item.setShelfPrice(item.getPriceExclTax() + item.getTaxes());
+        float taxes = item.getPriceExclTax() * rate;
+        taxes = (float) Math.ceil(taxes*20.0)/20f;
+
+        item.setTaxes(taxes);
+        item.setShelfPrice(item.getPriceExclTax() + taxes);
     }
 
     public static void main(String[] args) {
