@@ -1,0 +1,4 @@
+*.jpg
+*.class
+/target
+/.idea
