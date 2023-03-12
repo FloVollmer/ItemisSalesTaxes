@@ -14,10 +14,25 @@ public class ReceiptServiceTest {
         ReceiptItem res = receiptService.createFromString("1 book at 12.49");
         assertNotNull(res);
     }
+
     @Test
     public void createFromString_validInput_validReceiptItem() {
         ReceiptItem res = receiptService.createFromString("1 book at 12.49");
-        //assertEquals(1, res.getQuantity());
+        assertEquals(1, res.getQuantity());
+        assertEquals("book", res.getName());
+        assertEquals(12.49f, res.getPriceExclTax(), 0.001f);
+        assertFalse(res.isImported());
+        assertTrue(res.isExempted());
+    }
+
+    @Test
+    public void createFromString_validInput2_validReceiptItem() {
+        ReceiptItem res = receiptService.createFromString("1 imported box of chocolates at 10.00");
+        assertEquals(1, res.getQuantity());
+        assertEquals("imported box of chocolates", res.getName());
+        assertEquals(10.00f, res.getPriceExclTax(), 0.001f);
+        assertTrue(res.isImported());
+        assertTrue(res.isExempted());
     }
 
 }
