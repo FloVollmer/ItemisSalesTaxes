@@ -46,7 +46,7 @@ public class ReceiptServiceTest {
         assertEquals("book", res.getName());
         assertEquals(12.49f, res.getPriceExclTax(), 0.001f);
         assertFalse(res.isImported());
-        assertFalse(res.isExempted()); // No exemptions for imported products
+        assertTrue(res.isExempted());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ReceiptServiceTest {
 
         item.setExempted(false);
         receiptService.computeTaxes(item);
-        assertEquals(0.5f, item.getTaxes(), 0.001f);
+        assertEquals(1.5f, item.getTaxes(), 0.001f);
     }
 
 }

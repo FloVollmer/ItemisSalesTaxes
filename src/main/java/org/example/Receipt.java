@@ -18,8 +18,8 @@ public class Receipt {
     @Override
     public String toString() {
         return items.stream().map(item -> item.toString()).collect(Collectors.joining(System.lineSeparator()))
-                + System.lineSeparator() + "Sales Taxes: " + taxes
-                + System.lineSeparator() + "Total: " + total;
+                + System.lineSeparator() + "Sales Taxes: " + String.format("%.2f", taxes)
+                + System.lineSeparator() + "Total: " + String.format("%.2f", total);
     }
 
 }
