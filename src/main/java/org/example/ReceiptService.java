@@ -75,6 +75,8 @@ public class ReceiptService {
 
         float taxes = item.getPriceExclTax() * rate;
         taxes = (float) Math.ceil(taxes*20.0)/20f;
+        // Here I assumed that the rounding of the taxes is supposed to be done before multiplying by the quantity of the item.
+        // For exemple if an item has a tax of 0.07, the tax added to the shelf price will be 0.2 and not 0.15 when the quantity is 2.
 
         item.setTaxes(taxes);
         item.setShelfPrice(item.getPriceExclTax() + taxes);
