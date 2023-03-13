@@ -88,7 +88,7 @@ public class ReceiptService {
 
         do {
             System.out.println();
-            System.out.println("Enter your products (press enter twice to finish)");
+            System.out.println("Enter your products (press enter twice to print receipt, enter 'exit' to exit)");
             List<ReceiptItem> items = new ArrayList<>();
             do {
                 input = scanner.nextLine();
