@@ -16,7 +16,7 @@ public class ReceiptItem {
 
     @Override
     public String toString() {
-        return quantity + " " + name + ": " + String.format("%.2f", shelfPrice);
+        return quantity + " " + name + ": " + String.format("%.2f", shelfPrice*quantity);
     }
 
 }
