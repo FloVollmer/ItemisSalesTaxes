@@ -1,7 +1,11 @@
+import lombok.SneakyThrows;
 import org.example.Receipt;
 import org.example.ReceiptItem;
+import org.example.ReceiptParsingException;
 import org.example.ReceiptService;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 
@@ -33,12 +37,14 @@ public class ReceiptServiceTest {
 
     }
 
+    @SneakyThrows
     @Test
     public void createItemFromString_validInput_nonNullReceiptItem() {
         ReceiptItem res = receiptService.createItemFromString("1 book at 12.49");
         assertNotNull(res);
     }
 
+    @SneakyThrows
     @Test
     public void createItemFromString_validInput_validReceiptItem() {
         ReceiptItem res = receiptService.createItemFromString("1 book at 12.49");
@@ -49,6 +55,7 @@ public class ReceiptServiceTest {
         assertTrue(res.isExempted());
     }
 
+    @SneakyThrows
     @Test
     public void createFromString_validInput2_validReceiptItem() {
         ReceiptItem res = receiptService.createItemFromString("1 imported box of chocolates at 10.00");
@@ -58,6 +65,38 @@ public class ReceiptServiceTest {
         assertTrue(res.isImported());
         assertTrue(res.isExempted());
     }
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+    @SneakyThrows
+    @Test
+    public void createItemFromString_typo1_ThrowsException() {
+        exceptionRule.expect(ReceiptParsingException.class);
+        exceptionRule.expectMessage(ReceiptParsingException.GENERAL_MESSAGE);
+        receiptService.createItemFromString("1 bookat 10.00");
+    }
+    @SneakyThrows
+    @Test
+    public void createItemFromString_typo2_ThrowsException() {
+        exceptionRule.expect(ReceiptParsingException.class);
+        exceptionRule.expectMessage(ReceiptParsingException.GENERAL_MESSAGE);
+        receiptService.createItemFromString("1 book zt 10.00");
+    }
+    @SneakyThrows
+    @Test
+    public void createItemFromString_invalidQuantityThrowsException2() {
+        exceptionRule.expect(ReceiptParsingException.class);
+        exceptionRule.expectMessage(ReceiptParsingException.QUANTITY_MESSAGE);
+        receiptService.createItemFromString("One book at 10.00");
+    }
+    @SneakyThrows
+    @Test
+    public void createItemFromString_invalidPrice_ThrowsException() {
+        exceptionRule.expect(ReceiptParsingException.class);
+        exceptionRule.expectMessage(ReceiptParsingException.EXCLTAX_MESSAGE);
+        receiptService.createItemFromString("1 book at 10.00001");
+    }
+
 
     @Test
     public void computeTaxes_ValidItem_validPrice() {

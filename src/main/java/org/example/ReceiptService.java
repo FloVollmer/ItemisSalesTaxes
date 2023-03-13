@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class ReceiptService {
 
-    // List of known exempted products
+    // List of known exempted products. To be completed, parameterized or fetched from database
     private static final String[] EXEMPTED_PRODUCTS = new String[]{"book", "chocolate", "pills"};
     private static final float NORMAL_RATE = 0.1f;
     private static final float IMPORTED_RATE = 0.05f;
@@ -22,12 +22,23 @@ public class ReceiptService {
         return receipt;
     }
 
-    public ReceiptItem createItemFromString(String str) {
+    public ReceiptItem createItemFromString(String str) throws ReceiptParsingException {
         ReceiptItem item = new ReceiptItem();
         String[] strs = str.split(" ");
         int nbWords = strs.length;
 
-        item.setQuantity(Integer.parseInt(strs[0]));
+        if (nbWords < 4 || !strs[nbWords-2].equalsIgnoreCase("at")) {
+            throw new ReceiptParsingException();
+        }
+
+        try {
+            item.setQuantity(Integer.parseInt(strs[0]));
+        } catch (NumberFormatException e) {
+            throw new ReceiptParsingException(ReceiptParsingException.QUANTITY_MESSAGE);
+        }
+        if (item.getPriceExclTax() < 0 || Math.abs(item.getPriceExclTax() - Math.round(item.getPriceExclTax()*100f) / 100f) != 0) {
+            throw new ReceiptParsingException(ReceiptParsingException.QUANTITY_MESSAGE);
+        }
 
         String name = strs[1];
         for (int i=2; i<nbWords-2; ++i) {
@@ -43,7 +54,15 @@ public class ReceiptService {
             }
         }
 
-        item.setPriceExclTax(Float.parseFloat(strs[nbWords-1]));
+
+        try {
+            item.setPriceExclTax(Float.parseFloat(strs[nbWords-1]));
+        } catch (NumberFormatException e) {
+            throw new ReceiptParsingException(ReceiptParsingException.EXCLTAX_MESSAGE);
+        }
+        if (item.getPriceExclTax() < 0 || Math.abs(item.getPriceExclTax() - Math.round(item.getPriceExclTax()*100f) / 100f) != 0) {
+            throw new ReceiptParsingException(ReceiptParsingException.EXCLTAX_MESSAGE);
+        }
 
         computeTaxes(item);
 
@@ -73,14 +92,19 @@ public class ReceiptService {
             List<ReceiptItem> items = new ArrayList<>();
             do {
                 input = scanner.nextLine();
-                if (!input.isBlank()) {
-                    items.add(service.createItemFromString(input));
+                if (!input.isBlank() && !input.equals("exit")) {
+                    try {
+                        items.add(service.createItemFromString(input));
+                    } catch (ReceiptParsingException e) {
+                        System.err.println(e.getMessage());
+                    }
                 }
-            } while (!input.isBlank());
-            System.out.println(service.createFromItems(items));
+            } while (!input.isBlank() && !input.equals("exit"));
+            if (!input.equals("exit")) {
+                System.out.println(service.createFromItems(items));
+            }
 
         } while (!input.equals("exit"));
-
 
     }
 
