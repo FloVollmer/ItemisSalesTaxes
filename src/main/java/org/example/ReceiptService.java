@@ -1,8 +1,12 @@
 package org.example;
 
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class ReceiptService {
@@ -11,6 +15,12 @@ public class ReceiptService {
     private static final String[] EXEMPTED_PRODUCTS = new String[]{"book", "chocolate", "pills"};
     private static final float NORMAL_RATE = 0.1f;
     private static final float IMPORTED_RATE = 0.05f;
+    DecimalFormat decimalFormat;
+
+    public ReceiptService() {
+        decimalFormat = new DecimalFormat();
+        decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+    }
 
     public Receipt createFromItems (List<ReceiptItem> items) {
 
@@ -56,8 +66,8 @@ public class ReceiptService {
 
 
         try {
-            item.setPriceExclTax(Float.parseFloat(strs[nbWords-1]));
-        } catch (NumberFormatException e) {
+            item.setPriceExclTax(decimalFormat.parse(strs[nbWords-1]).floatValue());
+        } catch (ParseException e) {
             throw new ReceiptParsingException(ReceiptParsingException.EXCLTAX_MESSAGE);
         }
         if (item.getPriceExclTax() < 0 || Math.abs(item.getPriceExclTax() - Math.round(item.getPriceExclTax()*100f) / 100f) != 0) {
